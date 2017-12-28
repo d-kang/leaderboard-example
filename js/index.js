@@ -129,37 +129,58 @@ $(document).ready(function() {
     //
     // Generate a new address
     //
+
     $("#genAddress").on("click", function() {
-
-        if (!seed) {
-            console.log("You did not enter your seed yet");
-            return
-        }
-        if (!address) {
-            console.log("You did not enter your address yet");
-            return
-        }
-
-    })
-    $("#attachToTangle").on("click", function() {
-
+      console.log('genAddress clicked')
         if (!seed) {
             console.log("You did not enter your seed yet");
             return
         }
 
         // Deterministically generates a new address for the specified seed with a checksum
-        iota.api.getNewAddress( seed, { 'checksum': true }, function( e, address ) {
-
-            if (!e) {
-
-                address = address;
-                updateAddressHTML(address);
-
+        iota.api.getNewAddress( seed, { checksum: true }, function( e, address ) {
+          console.log('getNewAddress also ran when genAddress clicked');
+            if (e) {
+              console.error(e);
             } else {
-
-                console.log(e);
+              address = address;
+              updateAddressHTML(address);
             }
+        })
+    })
+
+    $("#attachToTangle").on("click", function() {
+      console.log('attachtotangle ran')
+        if (!seed) {
+            console.log("You did not enter your seed yet");
+            return
+        }
+
+        if (!address) {
+            console.log("You did not enter your address yet");
+            return
+        }
+        // Deterministically generates a new address for the specified seed with a checksum
+        // We attach the address to the tangle with an empty message transaction
+        var transfer = [{
+            address: address,
+            value: 0,
+            message: '',
+            tag: ''
+        }]
+        // Depth for the tip selection
+        var depth = 4;
+        // If we're on the mainnet, minWeightMagnitude is 18
+        var minWeightMagnitude = 18;
+        // Call the sendTransfer API wrapper function
+        // It takes care prepareTransfers, attachToTangle, broadcast and storeTransactions
+        iota.api.sendTransfer( seed, depth, minWeightMagnitude, transfer, function( e, attached ) {
+          console.log('sendTransfer also ran!')
+          if (e) {
+            console.error(e)
+          } else {
+              console.log("Successfully attached your transaction to the Tangle with transaction", attached);
+          }
         })
     })
 });
