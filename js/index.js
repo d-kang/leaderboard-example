@@ -135,6 +135,18 @@ $(document).ready(function() {
             console.log("You did not enter your seed yet");
             return
         }
+        if (!address) {
+            console.log("You did not enter your address yet");
+            return
+        }
+
+    })
+    $("#attachToTangle").on("click", function() {
+
+        if (!seed) {
+            console.log("You did not enter your seed yet");
+            return
+        }
 
         // Deterministically generates a new address for the specified seed with a checksum
         iota.api.getNewAddress( seed, { 'checksum': true }, function( e, address ) {
