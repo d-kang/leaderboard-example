@@ -4,8 +4,8 @@ $(document).ready(function() {
     //  Instantiate IOTA
     //
     var iota = new IOTA({
-        'host': 'http://localhost',
-        'port': 14265
+      'host': 'https://nodes.iota.cafe',
+      'port': 443
     });
 
     var seed;

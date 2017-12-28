@@ -2,10 +2,14 @@ $(document).ready(function() {
 
     //  Instantiate IOTA with provider 'http://localhost:14265'
     var iota = new IOTA({
-        'host': 'http://localhost',
-        'port': 14265
+      'host': 'https://nodes.iota.cafe',
+      'port': 443,
+      // sandbox: true
     });
 
+    console.log('iota', iota)
+    iota.api.attachToTangle
+    console.log('iota.api.attachToTangle', iota.api.attachToTangle);
     var seed;
     var address;
     var checkedTxs = 0;
@@ -21,7 +25,7 @@ $(document).ready(function() {
     // Properly formats the seed, replacing all non-latin chars with 9's
     //
     function setSeed(value) {
-
+      console.log('setSeed ran!')
         seed = "";
         value = value.toUpperCase();
 
