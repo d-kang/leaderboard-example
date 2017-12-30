@@ -1,12 +1,18 @@
 $(document).ready(function() {
   //  Instantiate IOTA with provider 'http://localhost:14265'
+  // var iota = new IOTA({
+  //   host: 'http://astra2261.startdedicated.net',
+  //   port: 14265
+  // });
+  // var iota = new IOTA({
+  //   host: 'https://iotanode.us',
+  //   port: 443
+  // });
   var iota = new IOTA({
-    'host': 'https://nodes.iota.cafe', 'port': 443,
-    // sandbox: true
+    host: 'http://iota.nck.nz',
+    port: 14265
   });
   console.log('iota', iota)
-  iota.api.attachToTangle
-  console.log('iota.api.attachToTangle', iota.api.attachToTangle);
   var seed;
   var address;
   var checkedTxs = 0;
@@ -37,6 +43,7 @@ $(document).ready(function() {
   //  Automatically updates the HTML on the site
   //
   function getAccountInfo() {
+    console.log('getAccountInfo ran!');
     // Command to be sent to the IOTA Node
     // Gets the latest transfers for the specified seed
     iota.api.getAccountData(seed, function(e, accountData) {
@@ -98,26 +105,51 @@ $(document).ready(function() {
   // Generate a new address
   //
   $("#genAddress").on("click", function() {
-    console.log('genAddress clicked')
+    console.log('genAddress clicked!')
     if (!seed) {
       console.log("You did not enter your seed yet");
       return
     }
     // Deterministically generates a new address for the specified seed with a checksum
-    iota.api.getNewAddress(seed, {
-      checksum: true
-    }, function(e, address) {
-      console.log('getNewAddress also ran when genAddress clicked');
+    iota.api.getNewAddress(seed, /*{ checksum: true },*/ function(e, add) {
+      console.log('getNewAddress ran after genAddress clicked!');
       if (e) {
         console.error(e);
       } else {
-        address = address;
+        console.log('add', add)
+        console.log('address1', address)
+        address = add;
+        console.log('address2', address)
         updateAddressHTML(address);
+        var transfer = [
+          {
+            address: address,
+            value: 0,
+            message: '',
+            tag: ''
+          }
+        ]
+        console.log('transfer[0].address', transfer[0].address)
+        // Depth for the tip selection
+        var depth = 4;
+        // If we're on the mainnet, minWeightMagnitude is 18
+        var minWeightMagnitude = 18;
+        // Call the sendTransfer API wrapper function
+        // It takes care prepareTransfers, attachToTangle, broadcast and storeTransactions
+        iota.api.sendTransfer(seed, depth, minWeightMagnitude, transfer, function(e, attached) {
+          console.log('sendTransfer ran after attachToTangle clicked!')
+          if (e) {
+            console.error(e)
+          } else {
+            console.log("Successfully attached your transaction to the Tangle with transaction", attached);
+          }
+        })
       }
     })
   })
   $("#attachToTangle").on("click", function() {
-    console.log('attachtotangle ran')
+    console.log('attachToTangle  clicked!');
+    console.log('attachToTangle>>> address', address)
     if (!seed) {
       console.log("You did not enter your seed yet");
       return
@@ -126,8 +158,6 @@ $(document).ready(function() {
       console.log("You did not enter your address yet");
       return
     }
-    // Deterministically generates a new address for the specified seed with a checksum
-    // We attach the address to the tangle with an empty message transaction
     var transfer = [
       {
         address: address,
@@ -142,8 +172,9 @@ $(document).ready(function() {
     var minWeightMagnitude = 18;
     // Call the sendTransfer API wrapper function
     // It takes care prepareTransfers, attachToTangle, broadcast and storeTransactions
+
     iota.api.sendTransfer(seed, depth, minWeightMagnitude, transfer, function(e, attached) {
-      console.log('sendTransfer also ran!')
+      console.log('sendTransfer ran after attachToTangle clicked!')
       if (e) {
         console.error(e)
       } else {
