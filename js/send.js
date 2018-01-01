@@ -2,7 +2,9 @@ $(document).ready(function() {
   //
   //  Instantiate IOTA
   //
-  var iota = new IOTA({'host': 'https://nodes.iota.cafe', 'port': 443});
+  const provider = 'https://iotanode.us:443';
+  var iota = new IOTA({ provider });
+
   var seed;
   var balance = 0;
   var address;
@@ -79,7 +81,7 @@ $(document).ready(function() {
     ]
     console.log("Sending Transfer", transfer);
     // We send the transfer from this seed, with depth 4 and minWeightMagnitude 18
-    iota.api.sendTransfer(seed, 4, 9, transfer, function(e) {
+    iota.api.sendTransfer(seed, 4, 14, transfer, function(e) {
       if (e) {
         var html = '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>ERROR!</strong>' + e + '.</div>'
         $("#send__success").html(JSON.stringify());

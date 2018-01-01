@@ -1,18 +1,10 @@
 $(document).ready(function() {
   //  Instantiate IOTA with provider 'http://localhost:14265'
-  // var iota = new IOTA({
-  //   host: 'http://astra2261.startdedicated.net',
-  //   port: 14265
-  // });
-  // var iota = new IOTA({
-  //   host: 'https://iotanode.us',
-  //   port: 443
-  // });
-  var iota = new IOTA({
-    host: 'http://iota.nck.nz',
-    port: 14265
-  });
-  console.log('iota', iota)
+  // const provider = 'https://iotanode.us:443';
+  const provider = 'http://node.lukaseder.de:14265';
+  var iota = new IOTA({ provider });
+  console.log('iota', iota);
+
   var seed;
   var address;
   var checkedTxs = 0;
@@ -59,19 +51,20 @@ $(document).ready(function() {
       if (accountData.transfers.length > checkedTxs) {
         console.log("RECEIVED NEW TXS");
         accountData.transfers.forEach(function(transfer) {
+          var message = iota.utils.extractJson(transfer);
           try {
             var message = iota.utils.extractJson(transfer);
             console.log("Extracted JSON from Transaction: ", message);
             message = JSON.parse(message);
             console.log("JSON: ", message);
             var newTx = {
-              'name': message.name,
-              'message': message.message,
-              'value': transfer[0].value
+              name: message.name,
+              message: message.message,
+              value: transfer[0].value
             }
             transferList.push(newTx);
           } catch (e) {
-            console.log("Transaction did not contain any JSON Data");
+            console.log("Transaction did not contain any JSON Data")
           }
         })
         // Increase the counter of checkedTxs
@@ -111,7 +104,7 @@ $(document).ready(function() {
       return
     }
     // Deterministically generates a new address for the specified seed with a checksum
-    iota.api.getNewAddress(seed, /*{ checksum: true },*/ function(e, add) {
+    iota.api.getNewAddress(seed, { checksum: true }, function(e, add) {
       console.log('getNewAddress ran after genAddress clicked!');
       if (e) {
         console.error(e);
@@ -133,7 +126,7 @@ $(document).ready(function() {
         // Depth for the tip selection
         var depth = 4;
         // If we're on the mainnet, minWeightMagnitude is 18
-        var minWeightMagnitude = 18;
+        var minWeightMagnitude = 14;
         // Call the sendTransfer API wrapper function
         // It takes care prepareTransfers, attachToTangle, broadcast and storeTransactions
         iota.api.sendTransfer(seed, depth, minWeightMagnitude, transfer, function(e, attached) {
@@ -169,7 +162,7 @@ $(document).ready(function() {
     // Depth for the tip selection
     var depth = 4;
     // If we're on the mainnet, minWeightMagnitude is 18
-    var minWeightMagnitude = 18;
+    var minWeightMagnitude = 14;
     // Call the sendTransfer API wrapper function
     // It takes care prepareTransfers, attachToTangle, broadcast and storeTransactions
 
